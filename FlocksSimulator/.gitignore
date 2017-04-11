@@ -1,5 +1,6 @@
 libs/*
 *.pro.user
+build-FlocksSimulator/*
 # Compiled Object files
 *.slo
 *.lo
