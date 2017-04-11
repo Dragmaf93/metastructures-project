@@ -31,6 +31,7 @@ bool FlockSimulator::DatabaseLogger::storeSimulationParameter(const ParameterSim
         query.bindValue(":description",parameter.getSimulationDescription());
         if(!query.exec()) qDebug() << "ERRORE INSERT SIMULATION";
 
+        int idSimulation;
         db.close();
         return true;
     }else{
