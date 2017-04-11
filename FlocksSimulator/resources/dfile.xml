@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<default-values>
+    <db-page>
+        <host>127.0.0.1</host>
+        <port>3306</port>
+        <user>root</user>
+        <name>simulations_data</name>
+    </db-page>
+    <simulation-config-page>
+    </simulation-config-page>
+</default-values>
