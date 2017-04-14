@@ -80,6 +80,9 @@ public:
     QVector<Flock> getFlocks()const;
     QVector<Obstacle> getObstacles()const;
 
+    void clearFlocks();
+    void clearObstacles();
+
     void setSimulationLabel(QString label);
     void setSimulationName(QString name);
     void setSimulationDescription(QString description);

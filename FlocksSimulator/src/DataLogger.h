@@ -5,10 +5,11 @@
 #include"parametersimulation.h"
 
 #include<QString>
-
+#include<QObject>
 namespace  FlockSimulator {
 
-class DataLogger{
+class DataLogger : public QObject{
+    Q_OBJECT
 public:
     virtual bool storeSimulationStep(jabs::simulation &simulation,unsigned currentStep) = 0;
     virtual bool storeSimulationParameter(const ParameterSimulation &parameter) = 0;

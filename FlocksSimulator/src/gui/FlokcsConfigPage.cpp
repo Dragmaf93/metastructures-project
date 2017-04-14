@@ -54,6 +54,8 @@ FlocksConfigPage::FlocksConfigPage()
 
 void FlocksConfigPage::setParameterSimulation(FlockSimulator::ParameterSimulation &parameter)
 {
+
+    parameter.clearFlocks();
     foreach (FlockItem* item, mFlockItems) {
         FlockSimulator::ParameterSimulation::Flock flock = item->getFlock();
         parameter.addFlock(flock);

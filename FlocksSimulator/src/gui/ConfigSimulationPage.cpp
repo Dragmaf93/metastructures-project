@@ -68,6 +68,9 @@ void ConfigSimulationPage::setParameterSimulation(FlockSimulator::ParameterSimul
     parameter.setRandomSeed(mRandomSeedInput->value());
     parameter.setTimeLimit(mTimeLimitInput->value());
     parameter.setTimeStep(mTimeStepInput->value());
+    parameter.setSimulationDescription(mDescriptionInput->toPlainText());
+    parameter.setSimulationLabel(mLabelInput->text());
+    parameter.setSimulationName(mNameInput->text());
 }
 
 bool ConfigSimulationPage::isComplete() const

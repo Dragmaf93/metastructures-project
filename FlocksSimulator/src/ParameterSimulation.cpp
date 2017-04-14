@@ -103,6 +103,16 @@ QVector<FlockSimulator::ParameterSimulation::Obstacle> FlockSimulator::Parameter
     return mObstaclesVector;
 }
 
+void FlockSimulator::ParameterSimulation::clearFlocks()
+{
+    mFlocksVector.clear();
+}
+
+void FlockSimulator::ParameterSimulation::clearObstacles()
+{
+    mObstaclesVector.clear();
+}
+
 void FlockSimulator::ParameterSimulation::setSimulationLabel(QString label)
 {
     mSimulationLabel = label;
