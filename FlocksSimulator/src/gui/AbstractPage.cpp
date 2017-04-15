@@ -6,11 +6,6 @@ AbstractPage::AbstractPage(AbstractPage::PAGE_TYPE type)
 {
 }
 
-void AbstractPage::initializePage()
-{
-    emit nextPage(mType);
-}
-
 void AbstractPage::pageChanged()
 {
     emit completeChanged();

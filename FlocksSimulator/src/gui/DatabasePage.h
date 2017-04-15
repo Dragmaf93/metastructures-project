@@ -10,18 +10,19 @@
 #include <QLabel>
 #include <QXmlQuery>
 
-#include <src/DatabaseLogger.h>
+#include "src/DatabaseLogger.h"
 
 class DatabasePage : public AbstractPage{
     Q_OBJECT
 public:
     DatabasePage();
 
-    void setParameterSimulation(FlockSimulator::ParameterSimulation &parameter){}
+    void setParameterSimulation(FlockSimulator::ParameterSimulation &parameter,QVector<FlockSimulator::ParameterSimulation>& pVector){}
     void setDatabaseLogger(FlockSimulator::DatabaseLogger* dbLogger);
 
     bool isComplete()const;
     void setDatabase();
+    bool validatePage();
 
 private:
     QLineEdit* mHostInput;

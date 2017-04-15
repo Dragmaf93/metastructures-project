@@ -120,6 +120,12 @@ bool FlockSimulator::DatabaseLogger::testConnection()
     return connection();
 }
 
+void FlockSimulator::DatabaseLogger::closeConnection()
+{
+    if(DATABASE.isOpen())
+        DATABASE.close();
+}
+
 void FlockSimulator::DatabaseLogger::setDatabaseName(QString name)
 {
     mDBName = name;

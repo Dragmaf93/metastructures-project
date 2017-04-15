@@ -20,6 +20,7 @@ public:
     virtual DataLogger *clone()const;
 
     bool testConnection();
+    void closeConnection();
 
     void setDatabaseName(QString name);
     void setDatabasePassword(QString password);

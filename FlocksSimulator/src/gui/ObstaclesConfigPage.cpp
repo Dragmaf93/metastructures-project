@@ -50,7 +50,7 @@ ObstacleConfigPage::ObstacleConfigPage()
 
 }
 
-void ObstacleConfigPage::setParameterSimulation(FlockSimulator::ParameterSimulation &parameter)
+void ObstacleConfigPage::setParameterSimulation(FlockSimulator::ParameterSimulation &parameter, QVector<FlockSimulator::ParameterSimulation> &pVector)
 {
     foreach (ObstacleItem* item, mObstacleItems) {
         FlockSimulator::ParameterSimulation::Obstacle o = item->getObstacle();

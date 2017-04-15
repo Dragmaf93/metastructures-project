@@ -8,7 +8,7 @@ class LastPage: public AbstractPage{
 
 public:
     LastPage();
-    void setParameterSimulation(FlockSimulator::ParameterSimulation &parameter){}
+    void setParameterSimulation(FlockSimulator::ParameterSimulation &parameter,QVector<FlockSimulator::ParameterSimulation>& pVector){}
 
 };
 

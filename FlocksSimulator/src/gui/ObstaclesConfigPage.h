@@ -19,7 +19,7 @@ class ObstacleConfigPage : public AbstractPage{
 
 public:
     explicit ObstacleConfigPage();
-    void setParameterSimulation(FlockSimulator::ParameterSimulation &parameter);
+    void setParameterSimulation(FlockSimulator::ParameterSimulation &parameter,QVector<FlockSimulator::ParameterSimulation>& pVector);
 private:
     QPushButton* mAddObstaclesButton;
     ObstacleDialog* mObstacleDialog;

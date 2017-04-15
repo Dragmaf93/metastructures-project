@@ -52,7 +52,7 @@ FlocksConfigPage::FlocksConfigPage()
 
 }
 
-void FlocksConfigPage::setParameterSimulation(FlockSimulator::ParameterSimulation &parameter)
+void FlocksConfigPage::setParameterSimulation(FlockSimulator::ParameterSimulation &parameter, QVector<FlockSimulator::ParameterSimulation> &pVector)
 {
 
     parameter.clearFlocks();

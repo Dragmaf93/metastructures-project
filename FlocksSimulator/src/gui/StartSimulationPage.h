@@ -7,6 +7,7 @@ class StartSimulationPage: public AbstractPage{
     Q_OBJECT
 public:
     StartSimulationPage();
-    void setParameterSimulation(FlockSimulator::ParameterSimulation &parameter){}
+    void setParameterSimulation(FlockSimulator::ParameterSimulation &parameter,QVector<FlockSimulator::ParameterSimulation>& pVector){}
+    int nextId()const;
 };
 #endif // STARTSIMULATIONPAGE_H

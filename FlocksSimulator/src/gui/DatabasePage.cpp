@@ -115,3 +115,16 @@ void DatabasePage::setDatabase()
     mDbLogger->setDatabasePort(mPortInput->text().toInt());
 }
 
+
+
+bool DatabasePage::validatePage()
+{
+    mDbLogger->closeConnection();
+    setDatabase();
+    if(mDbLogger->testConnection())
+        return true;
+    QMessageBox::critical(nullptr,"Error","Can't connect to database.",QMessageBox::Ok);
+    return false;
+}
+
+

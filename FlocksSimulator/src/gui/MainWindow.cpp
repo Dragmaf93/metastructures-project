@@ -18,33 +18,34 @@ MainWindow::MainWindow(QWidget* parent)
     mPages.insert(AbstractPage::OBSTACLES_CONFIG,new ObstacleConfigPage());
     mPages.insert(AbstractPage::START_SIMULATION,new StartSimulationPage());
     mPages.insert(AbstractPage::SIMULATION_RUNNING,new SimulationInProgressPage());
+    mPages.insert(AbstractPage::RANDOM_SIM_PAGE, new RandomSimulationPage());
     mPages.insert(AbstractPage::LAST_PAGE,new LastPage());
 
     QList<AbstractPage*> pages = mPages.values();
 
     foreach (AbstractPage* page, pages) {
         this->addPage(page);
-        connect(page,SIGNAL(nextPage(AbstractPage::PAGE_TYPE)),this,SLOT(pageChanged(AbstractPage::PAGE_TYPE)));
+        connect(page, SIGNAL(nextPage(AbstractPage::PAGE_TYPE)),this,SLOT(pageChanged(AbstractPage::PAGE_TYPE)));
     }
 
     connect(&mSimulatorManager,SIGNAL(end()),this,SLOT(simulationsEnd()));
 }
 
-void MainWindow::saveParameters()
-{
-    QList<AbstractPage*> pages = mPages.values();
-    FlockSimulator::ParameterSimulation p;
+//void MainWindow::saveParameters()
+//{
+//    QList<AbstractPage*> pages = mPages.values();
+//    FlockSimulator::ParameterSimulation p;
 
-    foreach (AbstractPage* page, pages) {
-        page->setParameterSimulation(p);
-    }
+//    foreach (AbstractPage* page, pages) {
+//        page->setParameterSimulation(p,mSimulationParameter);
+//    }
 
-    mSimulationParameter.append(p);
+////    mSimulationParameter.append(p);
 
-    if(mMultipleSimulationEnabled){
+////    if(mMultipleSimulationEnabled){
 
-    }
-}
+////    }
+//}
 
 void MainWindow::simulationsEnd()
 {
@@ -57,38 +58,26 @@ void MainWindow::simulationsEnd()
 void MainWindow::pageChanged(AbstractPage::PAGE_TYPE type)
 {
     if(AbstractPage::SIMULATION_RUNNING == type){
-        saveParameters();
 
-        button(QWizard::BackButton)->setDisabled(true);
-        button(QWizard::NextButton)->setDisabled(true);
-        startSimulations();
-    }
+        QList<AbstractPage*> pages = mPages.values();
+        FlockSimulator::ParameterSimulation p;
 
-    if(AbstractPage::GENERAL_CONFIG == type){
-
-        mDbPage->setDatabase();
-        if(!mDbLogger->testConnection()){
-            QMessageBox::critical(this,"Error","Can't connect to database.",QMessageBox::Ok);
-        }else{
-
+        foreach (AbstractPage* page, pages) {
+            page->setParameterSimulation(p,mSimulationParameter);
         }
-    }
 
+        mSimulatorManager.setDataLogger(mSelectedLogger);
+        mSimulatorManager.setMaxParallelThread(4);
+
+        for(int i = 0; i < mSimulationParameter.length(); i++){
+            mSimulatorManager.addSimulation(mSimulationParameter[i]);
+        }
+
+//        mSimulatorManager.startSimulations();
+    }
 }
 
 void MainWindow::nextButtonPressed()
 {
     emit next();
-}
-
-void MainWindow::startSimulations()
-{
-    mSimulatorManager.setDataLogger(mSelectedLogger);
-    mSimulatorManager.setMaxParallelThread(4);
-
-    for(int i = 0; i < mSimulationParameter.length(); i++){
-        mSimulatorManager.addSimulation(mSimulationParameter[i]);
-    }
-
-    mSimulatorManager.startSimulations();
 }

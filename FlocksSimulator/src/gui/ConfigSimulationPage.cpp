@@ -1,8 +1,5 @@
 #include "ConfigSimulationPage.h"
 
-#include <QFormLayout>
-#include <QLabel>
-
 ConfigSimulationPage::ConfigSimulationPage()
     :AbstractPage(GENERAL_CONFIG)
 {
@@ -24,19 +21,26 @@ ConfigSimulationPage::ConfigSimulationPage()
     mTimeLimitInput = new QSpinBox;
     mTimeStepInput = new QSpinBox;
 
+    mMultipleSimulationsRB = new QRadioButton("Multiple random simulations");
+    mSingleSimulationRB = new QRadioButton("Single custom simulation");
+
     mForceSpaceInput->setValue(DEFAULT_FORCE_OR);
     mRadiusSpaceInput->setValue(DEFAULT_RADIUS_OR);
     mRandomSeedInput->setValue(DEFAULT_RANDOM_SEED);
     mTimeLimitInput->setValue(DEFAULT_TIME_LIMIT_SEC);
     mTimeStepInput->setValue(DEFAULT_TIME_STEP_MSEC);
 
-    formLayoutL->addRow(new QLabel("<b>Time limit in seconds</b>"),mTimeLimitInput);
-    formLayoutR->addRow(new QLabel("<b>Time step in milliseconds</b>"),mTimeStepInput);
-    formLayoutR->addRow(new QLabel("<b>Space constraint force</b>"),mForceSpaceInput);
-    formLayoutL->addRow(new QLabel("<b>Space constraint radius</b>"),mRadiusSpaceInput);
-    formLayoutL->addRow(new QLabel("<b>Randomization seed</b>"),mRandomSeedInput);
-
+    formLayoutL->addRow(new QLabel("Time limit in seconds"),mTimeLimitInput);
+    formLayoutR->addRow(new QLabel("Time step in milliseconds"),mTimeStepInput);
+    formLayoutL->addRow(new QLabel("Space constraint radius"),mRadiusSpaceInput);
+    formLayoutR->addRow(new QLabel("Space constraint force"),mForceSpaceInput);
+    formLayoutL->addRow(new QLabel("Randomization seed"),mRandomSeedInput);
+    formLayoutR->addRow(new QLabel(" "));
+    formLayoutL->addRow( mSingleSimulationRB);
+    formLayoutR->addRow( mMultipleSimulationsRB);
     QFormLayout* topLayout = new QFormLayout();
+
+    mSingleSimulationRB->setChecked(true);
 
     mNameInput = new QLineEdit;
     mLabelInput = new QLineEdit;
@@ -45,9 +49,9 @@ ConfigSimulationPage::ConfigSimulationPage()
     mNameInput->setText("Simulation");
     mLabelInput->setText("Circular");
 
-    topLayout->addRow(new QLabel("<b>Name</b>"),mNameInput);
-    topLayout->addRow(new QLabel("<b>Label</b>"),mLabelInput);
-    topLayout->addRow(new QLabel("<b>Description</b>"),mDescriptionInput);
+    topLayout->addRow(new QLabel("Name"),mNameInput);
+    topLayout->addRow(new QLabel("Label"),mLabelInput);
+    topLayout->addRow(new QLabel("Description"),mDescriptionInput);
 
     rootLayout->addLayout(topLayout,1);
     rootLayout->addLayout(bottomLayout,2);
@@ -61,7 +65,7 @@ ConfigSimulationPage::ConfigSimulationPage()
 }
 
 
-void ConfigSimulationPage::setParameterSimulation(FlockSimulator::ParameterSimulation &parameter)
+void ConfigSimulationPage::setParameterSimulation(FlockSimulator::ParameterSimulation &parameter, QVector<FlockSimulator::ParameterSimulation> &pVector)
 {
     parameter.setForceSpace(mForceSpaceInput->value());
     parameter.setRadiusSpace(mRadiusSpaceInput->value());
@@ -78,4 +82,10 @@ bool ConfigSimulationPage::isComplete() const
     if(mNameInput->text().isEmpty()
             || mLabelInput->text().isEmpty()) return false;
     return true;
+}
+
+int ConfigSimulationPage::nextId() const
+{
+    if(mSingleSimulationRB->isChecked()) return PAGE_TYPE::FLOCKS_CONFIG;
+    if(mMultipleSimulationsRB->isChecked()) return PAGE_TYPE::RANDOM_SIM_PAGE;
 }

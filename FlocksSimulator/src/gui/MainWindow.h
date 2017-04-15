@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMap>
+#include<QMessageBox>
+#include<QWizard>
 
 #include"AbstractPage.h"
 #include "ConfigSimulationPage.h"
@@ -12,9 +14,9 @@
 #include "SimulationInProgressPage.h"
 #include "LastPage.h"
 #include "DatabasePage.h"
+#include "RandomSimulationPage.h"
 #include"../SimulatorsManager.h"
 #include"../DatabaseLogger.h"
-#include<QMessageBox>
 
 class MainWindow : public QWizard{
     Q_OBJECT
@@ -25,14 +27,15 @@ public:
 private:
     QMap<AbstractPage::PAGE_TYPE,AbstractPage*> mPages;
     FlockSimulator::SimulatorsManager mSimulatorManager;
+
     QVector<FlockSimulator::ParameterSimulation> mSimulationParameter;
     bool mMultipleSimulationEnabled;
 
     FlockSimulator::DatabaseLogger* mDbLogger;
     FlockSimulator::DataLogger* mSelectedLogger;
 
-    void startSimulations();
-    void saveParameters();
+//    void startSimulations();
+//    void saveParameters();
 
     DatabasePage* mDbPage;
 signals:

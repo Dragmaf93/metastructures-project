@@ -19,7 +19,7 @@ class FlocksConfigPage : public AbstractPage{
 
 public:
     FlocksConfigPage();
-    void setParameterSimulation(FlockSimulator::ParameterSimulation &parameter);
+    void setParameterSimulation(FlockSimulator::ParameterSimulation &parameter,QVector<FlockSimulator::ParameterSimulation>& pVector);
 
 private:
     QPushButton* mAddFlocksButton;
