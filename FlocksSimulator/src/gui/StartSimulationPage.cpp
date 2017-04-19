@@ -7,10 +7,22 @@ StartSimulationPage::StartSimulationPage()
 
     setButtonText(QWizard::NextButton,QString("Start"));
 
+    setButtonText(QWizard::CancelButton,QString("Continue to add simulations"));
 }
 
 int StartSimulationPage::nextId() const
 {
-    emit nextPage(PAGE_TYPE::SIMULATION_RUNNING);
     return PAGE_TYPE::SIMULATION_RUNNING;
+}
+
+void StartSimulationPage::initializePage()
+{
+    AbstractPage::initializePage();
+    emit nextPage(START_SIMULATION);
+}
+
+void StartSimulationPage::cleanupPage()
+{
+    AbstractPage::cleanupPage();
+    emit nextPage(OBSTACLES_CONFIG);
 }

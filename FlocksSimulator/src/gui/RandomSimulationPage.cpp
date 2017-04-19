@@ -63,6 +63,8 @@ RandomSimulationPage::RandomSimulationPage()
 
 void RandomSimulationPage::setParameterSimulation(FlockSimulator::ParameterSimulation &parameter, QVector<FlockSimulator::ParameterSimulation>& pVector)
 {
+   if(!mViewed) return;
+   qDebug() <<"RandomPage";
    unsigned seed = mSeedInput->value();
    unsigned numSimulation = mNumSimulationInput->value();
    for(int i = 0; i < numSimulation; i++){
@@ -75,7 +77,6 @@ void RandomSimulationPage::setParameterSimulation(FlockSimulator::ParameterSimul
        flock.xMax = getRandomFloat(mRangeMaxXLInput->value(),mRangeMaxXUInput->value(),seed*i);
        flock.zMin= getRandomFloat(mRangeMinZLInput->value(),mRangeMinZUInput->value(),seed*i);
        flock.zMax = getRandomFloat(mRangeMaxZLInput->value(),mRangeMaxZUInput->value(),seed*i);
-       qDebug()<< flock.xMin;
        p.clearFlocks();
        p.addFlock(flock);
 
@@ -107,7 +108,7 @@ QSpinBox *RandomSimulationPage::createQSpinBox(int defVal) const
 {
     QSpinBox* spinI = new QSpinBox;
     spinI->setMaximum(999);
-    spinI->setMinimum(0);
+    spinI->setMinimum(1);
     spinI->setValue(defVal);
     return spinI;
 

@@ -67,6 +67,9 @@ ConfigSimulationPage::ConfigSimulationPage()
 
 void ConfigSimulationPage::setParameterSimulation(FlockSimulator::ParameterSimulation &parameter, QVector<FlockSimulator::ParameterSimulation> &pVector)
 {
+    if(!mViewed) return;
+    qDebug() <<"ConfigPage";
+
     parameter.setForceSpace(mForceSpaceInput->value());
     parameter.setRadiusSpace(mRadiusSpaceInput->value());
     parameter.setRandomSeed(mRandomSeedInput->value());

@@ -17,7 +17,11 @@ public:
     virtual void setParameterSimulation(FlockSimulator::ParameterSimulation &parameter,
                                          QVector<FlockSimulator::ParameterSimulation>& pVector) = 0;
 
+    void initializePage(){mViewed = true;}
+    void cleanupPage(){mViewed = false;}
+
 protected:
+    bool mViewed;
     PAGE_TYPE mType;
     const QString DFILE_PATH=":/resources/dfile.xml";
 protected slots:

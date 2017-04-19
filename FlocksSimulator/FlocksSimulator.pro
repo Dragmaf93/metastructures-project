@@ -29,7 +29,9 @@ HEADERS  += \
     src/gui/SimulationInProgressPage.h \
     src/gui/LastPage.h \
     src/gui/DatabasePage.h \
-    src/gui/RandomSimulationPage.h
+    src/gui/RandomSimulationPage.h \
+    src/MessageSender.h \
+    src/exception.h
 
 SOURCES += src/main.cpp \
     src/ParameterSimulation.cpp \
@@ -59,7 +61,8 @@ SOURCES += src/main.cpp \
     src/gui/SimulationInProgressPage.cpp \
     src/gui/LastPage.cpp \
     src/gui/DatabasePage.cpp \
-    src/gui/RandomSimulationPage.cpp
+    src/gui/RandomSimulationPage.cpp \
+    src/MessageSender.cpp
 
 INCLUDEPATH += $$PWD/libs/include
 DEPENDPATH += $$PWD/libs/include

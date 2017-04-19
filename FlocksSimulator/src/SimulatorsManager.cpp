@@ -10,7 +10,6 @@ FlockSimulator::SimulatorsManager::SimulatorsManager()
 void FlockSimulator::SimulatorsManager::startSimulations()
 {
     if(!mSimulationStarted){
-
         mMainThread = new QThread();
         mSimulationStarted = true;
         moveToThread(mMainThread);
@@ -60,10 +59,6 @@ void FlockSimulator::SimulatorsManager::mainThreadRun()
     while(!mParameterSimulations.isEmpty()){
         ParameterSimulation p = mParameterSimulations.dequeue();
 
-        ThreadSimulator * simulator = new ThreadSimulator(mDataLogger,this);
-        mActiveThreads.append(simulator);
-        simulator->initializeSimulation(p);
-        connect(simulator, SIGNAL(finished()), simulator, SLOT(deleteLater()));
 
         mMutex.lock();
 
@@ -73,7 +68,25 @@ void FlockSimulator::SimulatorsManager::mainThreadRun()
 
         mMutex.unlock();
 
-        simulator->start();
+        DataLogger* cln = mDataLogger->clone();
+        ThreadSimulator * simulator = new ThreadSimulator(cln,this);
+
+        if(simulator->initializeSimulation(p)){
+
+            mActiveThreads.append(simulator);
+            connect(simulator, SIGNAL(finished()), simulator, SLOT(deleteLater()));
+            connect(cln,SIGNAL(message(QString)),this,SLOT(sendMessage(QString)));
+            connect(cln,SIGNAL(error(QString)),this,SLOT(sendError(QString)));
+
+            emit message("Simulator_"+QString::number(simulator->id)+": Starts.");
+            simulator->start();
+        }else{
+
+            emit error("Simulator_"+QString::number(simulator->id)+": Error during initilization of simulation.");
+            delete simulator;
+            mCurrentParallelThread--;
+            mSimulationEnded++;
+        }
     }
     mMutex.lock();
 
@@ -83,15 +96,17 @@ void FlockSimulator::SimulatorsManager::mainThreadRun()
     mCurrentParallelThread++;
 
     mMutex.unlock();
+    emit message("All simulations have finished.");
+
     emit end();
 }
 
-void FlockSimulator::SimulatorsManager::onFinished()
+void FlockSimulator::SimulatorsManager::onFinished(int i)
 {
     mMutex.lock();
     mCurrentParallelThread--;
     mSimulationEnded++;
-
+    emit message("Simulator_"+QString::number(i)+": Has finished.");
     if(mCurrentParallelThread<mMaxParallelThread)
         mCondition.wakeOne();
     mMutex.unlock();
@@ -99,5 +114,5 @@ void FlockSimulator::SimulatorsManager::onFinished()
 
 void FlockSimulator::SimulatorsManager::simulatorEnd()
 {
-//    emit end();
+    //    emit end();
 }

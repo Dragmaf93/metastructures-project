@@ -2,9 +2,11 @@
 #define DATABASELOGGER_H
 
 #include<QtSql>
-#include"DataLogger.h"
 #include<QDebug>
 #include<QThread>
+
+#include"DataLogger.h"
+
 namespace FlockSimulator {
 
 class DatabaseLogger: public DataLogger{
@@ -35,21 +37,31 @@ public:
     unsigned getDatabasePort()const;
 
 private:
-    static QSqlDatabase DATABASE;
+    static unsigned NUM_DB;
+//    QSqlDatabase mDatabase;
+    QSqlQuery* mQuerySimulation;
+    QSqlQuery* mQueryParameter;
+
+    QString mConnectionName;
+
     QString mDBName;
     QString mDBPassword;
     QString mDBUser;
     QString mDBHost;
     unsigned mDBPort;
+
+    unsigned mMaxStep;
     int mLastIdSimulation;
     bool connection();
+
     QVariantList mSim;
     QVariantList mStep;
     QVariantList mBoids;
     QVariantList mX;
     QVariantList mY;
     QVariantList mZ;
-    unsigned mMaxStep;
+
+
 private slots:
 };
 }

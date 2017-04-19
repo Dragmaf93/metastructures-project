@@ -15,6 +15,7 @@
 #include "LastPage.h"
 #include "DatabasePage.h"
 #include "RandomSimulationPage.h"
+#include "../MessageSender.h"
 #include"../SimulatorsManager.h"
 #include"../DatabaseLogger.h"
 
@@ -39,10 +40,10 @@ private:
 
     DatabasePage* mDbPage;
 signals:
-
     void nextPage();
-private slots:
 
+private slots:
+    void toConfigPage();
     void simulationsEnd();
     void pageChanged(AbstractPage::PAGE_TYPE);
     void nextButtonPressed();

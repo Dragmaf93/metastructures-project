@@ -1,12 +1,18 @@
 #include "databaselogger.h"
+unsigned FlockSimulator::DatabaseLogger::NUM_DB = 0;
+
 FlockSimulator::DatabaseLogger::DatabaseLogger()
 {
+    QString name("ConnectionDB_");
 
+    mConnectionName = name + QString::number(NUM_DB);
+    QSqlDatabase::addDatabase("QMYSQL",mConnectionName);
+    NUM_DB++;
 }
-
 FlockSimulator::DatabaseLogger::~DatabaseLogger()
 {
-
+    closeConnection();
+    QSqlDatabase::removeDatabase(mConnectionName);
 }
 
 FlockSimulator::DatabaseLogger::DatabaseLogger(const FlockSimulator::DatabaseLogger &logger)
@@ -15,84 +21,137 @@ FlockSimulator::DatabaseLogger::DatabaseLogger(const FlockSimulator::DatabaseLog
     mDBName = logger.mDBName;
     mDBUser = logger.mDBUser;
     mDBPassword = logger.mDBPassword;
+    mDBPort = logger.mDBPort;
+
+    QString name("ConnectionDB_");
+    mConnectionName = name + QString::number(NUM_DB);
+    QSqlDatabase::addDatabase("QMYSQL",mConnectionName);
+    NUM_DB++;
+
 }
 
 bool FlockSimulator::DatabaseLogger::storeSimulationStep(jabs::simulation &simulation, unsigned currentStep)
 {
+    QSqlDatabase database = QSqlDatabase::database(mConnectionName,false);
     if(connection()){
-
-        QSqlQuery query;
-        query.prepare("insert into microscopic_data(simulation, step , boid, positionX, positionY, positionZ) values"
-                      "(?,?,?,?,?,?)");
-        //        "(:sim, :step, :boid, :x, :y, :z)");
 
         const jabs::boid* b = &(simulation.getNation().getBoids()[0]);
         for(unsigned boid = 0; boid < simulation.getNation().getBoids().size(); boid++){
-            mSim << mLastIdSimulation;
+            //            mSim << mLastIdSimulation;
             mStep << currentStep;
             mBoids << boid;
             mX << simulation.getNation().getBoids()[boid].pos.X;
             mY << simulation.getNation().getBoids()[boid].pos.Y;
             mZ << simulation.getNation().getBoids()[boid].pos.Z;
         }
+
         if(currentStep == mMaxStep -1){
-            qDebug() << "PREPARAZIONE";
-            query.addBindValue(mSim);
-            query.addBindValue(mStep);
-            query.addBindValue(mBoids);
-            query.addBindValue(mX);
-            query.addBindValue(mY);
-            query.addBindValue(mZ);
+            emit message(mConnectionName+": Storing data simulation.");
+
+            QSqlQuery query(database);
+            query.prepare("insert into microscopic_data(simulation, step , boid, positionX, positionY, positionZ) values"
+                          "(?,?,?,?,?,?)");
+
             QElapsedTimer timer;
 
 
             timer.start();
-            qDebug() << "INIZIO";
-            DATABASE.transaction();
-            if(!query.execBatch())
-                qDebug()<<query.lastError();
-            qDebug() << "FINE"<<timer.elapsed();
-            DATABASE.commit();
-//            QThread* thread = new QThread();
-//            moveToThread(thread);
-//            connect(thread,SIGNAL(started()),this,SLOT(insertToDatabase()));
-//            connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-//            thread->start();
+
+            database.transaction();
+
+            if(mQuerySimulation->exec()){
+                //                mQuerySimulation->lastError();
+                mLastIdSimulation = mQuerySimulation->lastInsertId().toInt();
+                //                qDebug() <<mLastIdSimulation;
+                mQueryParameter->bindValue(":sim",mLastIdSimulation);
+
+                for(unsigned s = 0; s < mBoids.size(); s++)
+                    mSim << mLastIdSimulation;
+
+                query.addBindValue(mSim);
+                query.addBindValue(mStep);
+                query.addBindValue(mBoids);
+                query.addBindValue(mX);
+                query.addBindValue(mY);
+                query.addBindValue(mZ);
+
+                if(!mQueryParameter->exec()){
+                    emit error(mConnectionName+": "+mQueryParameter->lastError().text());
+                }
+                if(!query.execBatch()){
+                    emit error(mConnectionName+": "+query.lastError().text());
+                    delete mQueryParameter;
+                    delete mQuerySimulation;
+                    database.rollback();
+                    return false;
+                }
+                if(!database.commit()){
+                    emit error(mConnectionName+": "+database.lastError().text());
+                    delete mQueryParameter;
+                    delete mQuerySimulation;
+                    database.rollback();
+                    return false;
+                }
+                //                qDebug()<<mConnectionName<<": Data have been stored in "<<QString::number(timer.elapsed())<<" milliseconds";
+                emit message(mConnectionName+": Data have been stored in "+QString::number(timer.elapsed())+" milliseconds.");
+                delete mQueryParameter;
+                delete mQuerySimulation;
+                return true;
+            }else {
+                database.rollback();
+                delete mQueryParameter;
+                delete mQuerySimulation;
+
+                emit error(mConnectionName+": "+database.lastError().text());
+                return false;
+            }
         }
+    }else{
+        delete mQueryParameter;
+        delete mQuerySimulation;
+
+        qDebug() << mConnectionName+": "+database.lastError().text();
+        emit error(mConnectionName+": "+database.lastError().text());
+        return false;
     }
 }
 
 bool FlockSimulator::DatabaseLogger::storeSimulationParameter(const ParameterSimulation &parameter)
 {
-    qDebug() << "CIAOOO";
+    QSqlDatabase database = QSqlDatabase::database(mConnectionName,false);
+
     if(connection()){
-        QSqlQuery querySimulation;
+        mQuerySimulation = new QSqlQuery(database);
 
-        querySimulation.prepare("insert into simulation(name,label,description) values(:name, :label, :description)");
-        querySimulation.bindValue(":name",parameter.getSimulationName());
-        querySimulation.bindValue(":label",parameter.getSimulationLabel());
-        querySimulation.bindValue(":description",parameter.getSimulationDescription());
-        if(!querySimulation.exec()) qDebug() << "ERRORE INSERT SIMULATION";
+        mQuerySimulation->prepare("insert into simulation(name,label,description) values(:name, :label, :description)");
+        mQuerySimulation->bindValue(":name",parameter.getSimulationName());
+        mQuerySimulation->bindValue(":label",parameter.getSimulationLabel());
+        mQuerySimulation->bindValue(":description",parameter.getSimulationDescription());
+        //        if(!mQuerySimulation.->exec()) qDebug() <<mQuerySimulation.lastError();
 
-        mLastIdSimulation = querySimulation.lastInsertId().toInt();
+        //        mLastIdSimulation = mQuerySimulation->lastInsertId().toInt();
         float timeStepSec = float(parameter.getTimeStep())/ 1000;
         mMaxStep = unsigned ((float)parameter.getTimeLimit()/timeStepSec);
 
-        QSqlQuery queryParameter;
-        queryParameter.prepare("insert into simulation_parameter(simulation, force_space, radius_space, time_limit, time_step, predation, seed)"
-                               " values (:sim, :fs, :rs, :tl, :ts, :p, :seed)");
-        queryParameter.bindValue(":sim",mLastIdSimulation);
-        queryParameter.bindValue(":fs",parameter.getForceSpace());
-        queryParameter.bindValue(":rs",parameter.getRadiusSpace());
-        queryParameter.bindValue(":tl",parameter.getTimeLimit());
-        queryParameter.bindValue(":ts",parameter.getTimeStep());
-        queryParameter.bindValue(":p",parameter.isPredationEnabled());
-        queryParameter.bindValue(":seed",parameter.getRandomSeed());
+        mQueryParameter = new QSqlQuery(database);
+        mQueryParameter->prepare("insert into simulation_parameter(simulation, force_space, radius_space, time_limit, time_step, predation, seed)"
+                                 " values (:sim, :fs, :rs, :tl, :ts, :p, :seed)");
+        //        mQueryParameter->bindValue(":sim",mLastIdSimulation);
+        mQueryParameter->bindValue(":fs",parameter.getForceSpace());
+        mQueryParameter->bindValue(":rs",parameter.getRadiusSpace());
+        mQueryParameter->bindValue(":tl",parameter.getTimeLimit());
+        mQueryParameter->bindValue(":ts",parameter.getTimeStep());
+        mQueryParameter->bindValue(":p",parameter.isPredationEnabled());
+        mQueryParameter->bindValue(":seed",parameter.getRandomSeed());
 
-        if(!queryParameter.exec()) qDebug() <<queryParameter.lastError();
+        //        if(!queryParameter.exec()) qDebug() <<queryParameter.lastError();
 
         return true;
     }else{
+        delete mQueryParameter;
+        delete mQuerySimulation;
+        qDebug() << mConnectionName+": "+database.lastError().text();
+        emit error(mConnectionName+": "+database.lastError().text());
         return false;
     }
 }
@@ -104,26 +163,15 @@ FlockSimulator::DataLogger *FlockSimulator::DatabaseLogger::clone() const
 
 bool FlockSimulator::DatabaseLogger::testConnection()
 {
-    //    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-    //    db.setPort(mDBPort);
-    //    db.setHostName(mDBHost);
-    //    db.setDatabaseName(mDBName);
-    //    db.setUserName(mDBUser);
-    //    db.setPassword(mDBPassword);
-    //    if (!db.open())
-    //    {
-    //       db.close();
-    //       qDebug() << db.lastError();
-    //      return false;
-    //    }
-    //    db.close();
     return connection();
 }
 
 void FlockSimulator::DatabaseLogger::closeConnection()
 {
-    if(DATABASE.isOpen())
-        DATABASE.close();
+    QSqlDatabase database = QSqlDatabase::database(mConnectionName,false);
+
+    if(database.isOpen())
+        database.close();
 }
 
 void FlockSimulator::DatabaseLogger::setDatabaseName(QString name)
@@ -175,20 +223,21 @@ unsigned FlockSimulator::DatabaseLogger::getDatabasePort() const
 {
     return mDBPort;
 }
-QSqlDatabase FlockSimulator::DatabaseLogger::DATABASE= QSqlDatabase::addDatabase("QMYSQL");
 
 bool FlockSimulator::DatabaseLogger::connection()
 {
-
-    if(!DATABASE.isOpen()){
-
-        DATABASE.setPort(mDBPort);
-        DATABASE.setHostName(mDBHost);
-        DATABASE.setDatabaseName(mDBName);
-        DATABASE.setUserName(mDBUser);
-        DATABASE.setPassword(mDBPassword);
-
-        return DATABASE.open();
+    QSqlDatabase database = QSqlDatabase::database(mConnectionName,false);
+    if(!database.isValid()){
+        emit error(mConnectionName+": "+database.lastError().text());
+        return false;
+    }
+    if(!database.isOpen()){
+        database.setPort(mDBPort);
+        database.setHostName(mDBHost);
+        database.setDatabaseName(mDBName);
+        database.setUserName(mDBUser);
+        database.setPassword(mDBPassword);
+        return database.open();
     }
     return true;
 }

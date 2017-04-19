@@ -1,9 +1,11 @@
 #include "threadsimulator.h"
 #include<QDebug>
-FlockSimulator::ThreadSimulator::ThreadSimulator(const FlockSimulator::DataLogger *logger, SimulatorsManager* manager)
+unsigned FlockSimulator::ThreadSimulator::LAST_ID = 0;
+FlockSimulator::ThreadSimulator::ThreadSimulator(FlockSimulator::DataLogger *logger, SimulatorsManager* manager)
 {
     mManager =manager;
-    mDataLogger = logger->clone();
+    mDataLogger = logger;
+    id = LAST_ID++;
 }
 
 FlockSimulator::ThreadSimulator::~ThreadSimulator()
@@ -11,9 +13,9 @@ FlockSimulator::ThreadSimulator::~ThreadSimulator()
     delete mDataLogger;
 }
 
-void FlockSimulator::ThreadSimulator::initializeSimulation(const FlockSimulator::ParameterSimulation &p)
+bool FlockSimulator::ThreadSimulator::initializeSimulation(const FlockSimulator::ParameterSimulation &p)
 {
-    mDataLogger->storeSimulationParameter(p);
+    if(!mDataLogger->storeSimulationParameter(p)) return false;
 
     jabs::boidNation::flockInitSetup    flockSetup;
     jabs::boidNation::flockInitSetupList flockSetupList;
@@ -72,6 +74,7 @@ void FlockSimulator::ThreadSimulator::initializeSimulation(const FlockSimulator:
 
         mSimulation.addSphereObstacle(s);
     }
+    return true;
 }
 
 void FlockSimulator::ThreadSimulator::run()
@@ -80,11 +83,11 @@ void FlockSimulator::ThreadSimulator::run()
     while(mCurrentStep < mMaxStep){
 
         mSimulation.run();
-
+//        if(mCurrentStep%100 ==0) /*qDebug*/() <<id<< "  "<<mCurrentStep;
         mDataLogger->storeSimulationStep(mSimulation,mCurrentStep);
         mCurrentStep++;
     }
-    mManager->onFinished();
+    mManager->onFinished(id);
     emit simulationEnded();
 }
 

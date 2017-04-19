@@ -52,10 +52,15 @@ ObstacleConfigPage::ObstacleConfigPage()
 
 void ObstacleConfigPage::setParameterSimulation(FlockSimulator::ParameterSimulation &parameter, QVector<FlockSimulator::ParameterSimulation> &pVector)
 {
+    if(!mViewed) return;
+    qDebug() <<"ObstaclePage";
+
     foreach (ObstacleItem* item, mObstacleItems) {
         FlockSimulator::ParameterSimulation::Obstacle o = item->getObstacle();
         parameter.addObstacle(o);
     }
+
+    pVector.append(parameter);
 }
 
 void ObstacleConfigPage::addObstacleItem(FlockSimulator::ParameterSimulation::Obstacle &obstacle)

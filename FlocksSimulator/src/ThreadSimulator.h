@@ -13,16 +13,19 @@ class ThreadSimulator : public QThread{
     Q_OBJECT
 
 public:
-    ThreadSimulator(const DataLogger *logger, SimulatorsManager* manager);
+    ThreadSimulator(DataLogger *logger, SimulatorsManager* manager);
     ~ThreadSimulator();
 
-    void initializeSimulation(const ParameterSimulation &parameterSimulation);
+    bool initializeSimulation(const ParameterSimulation &parameterSimulation);
     void run();
-
     float getPercentage();
+
+    unsigned id;
 private:
     unsigned mCurrentStep;
+
     unsigned mMaxStep;
+    static  unsigned LAST_ID;
 
     jabs::simulation mSimulation;
     DataLogger* mDataLogger;

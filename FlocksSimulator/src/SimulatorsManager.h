@@ -9,7 +9,7 @@
 
 namespace FlockSimulator {
 class ThreadSimulator;
-class SimulatorsManager : public QObject{
+class SimulatorsManager : public MessageSender{
     Q_OBJECT
 public:
     SimulatorsManager();
@@ -47,7 +47,7 @@ signals:
     void end();
 
 public slots:
-    void onFinished();
+    void onFinished(int i);
 private slots:
     void simulatorEnd();
     void mainThreadRun();
