@@ -38,20 +38,20 @@ bool SimulationInProgressPage::isComplete() const
 void SimulationInProgressPage::simulationsStarted()
 {
     mProgressBar->setMaximum(mSimulator->getMaximumProgress()+ mSimulator->getMaximumProgress()*0.01);
+
     qDebug() << mProgressBar->maximum();
-    ProgressBarUpdater* thread = new ProgressBarUpdater(this);
-    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-    thread->start();
 }
 
 void SimulationInProgressPage::setSimulator(FlockSimulator::SimulatorsManager &s)
 {
    mSimulator = &s;
+   connect(mSimulator,SIGNAL(progress(int)),mProgressBar,SLOT(setValue(int)));
 }
 
 void SimulationInProgressPage::simulationEnded()
 {
     mSimulationEnded=true;
+    mProgressBar->setValue(mProgressBar->maximum());
 }
 
 void SimulationInProgressPage::readOutput(QString string)
@@ -64,16 +64,11 @@ void SimulationInProgressPage::readError(QString string)
     mTextEdit->append(string);
 }
 
-ProgressBarUpdater::ProgressBarUpdater(SimulationInProgressPage *p)
+void SimulationInProgressPage::updateProgressBar()
 {
-    this->page = p;
-}
-
-void ProgressBarUpdater::run()
-{
-    while(!page->mSimulationEnded){
-        page->mProgressBar->setValue(page->mSimulator->getProgress());
+    while(mSimulationEnded){
+        mProgressBar->setValue(mSimulator->getProgress());
         QThread::sleep(2);
     }
-    page->mProgressBar->setValue(page->mProgressBar->maximum());
+    mProgressBar->setValue(mProgressBar->maximum());
 }

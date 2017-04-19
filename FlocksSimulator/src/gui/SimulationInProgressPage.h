@@ -35,15 +35,6 @@ private:
 public slots:
     void readOutput(QString string);
     void readError(QString string);
-
-
-};
-
-class ProgressBarUpdater: public QThread{
-    Q_OBJECT
-public:
-    ProgressBarUpdater(SimulationInProgressPage* p);
-    void run();
-    SimulationInProgressPage* page;
+    void updateProgressBar();
 };
 #endif // SIMULATIONINPROGRESSPAGE_H

@@ -36,6 +36,7 @@ private:
     FlockSimulator::DataLogger* mSelectedLogger;
 
     DatabasePage* mDbPage;
+    SimulationInProgressPage* mSipPage;
 signals:
     void nextPage();
 

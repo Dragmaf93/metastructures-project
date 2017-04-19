@@ -7,6 +7,7 @@ FlockSimulator::SimulatorsManager::SimulatorsManager()
     mSimulationStarted = false;
     mTotalSteps = 0;
     mCurrentTotalSteps = 0;
+    mSimEnd=false;
 }
 
 void FlockSimulator::SimulatorsManager::startSimulations()
@@ -18,6 +19,12 @@ void FlockSimulator::SimulatorsManager::startSimulations()
         connect(mMainThread,SIGNAL(started()),this,SLOT(mainThreadRun()));
         connect(mMainThread, SIGNAL(finished()), mMainThread, SLOT(deleteLater()));
         mMainThread->start();
+
+        ProgressSignalEmiter* emitter = new ProgressSignalEmiter;
+        emitter->manager=this;
+        connect(emitter, SIGNAL(finished()), emitter, SLOT(deleteLater()));
+        emitter->start();
+
     }
 }
 
@@ -115,9 +122,15 @@ void FlockSimulator::SimulatorsManager::mainThreadRun()
     mCurrentParallelThread++;
 
     mMutex.unlock();
+    mSimEnd =true;
     emit message("All simulations have finished.");
 
     emit end();
+}
+
+void FlockSimulator::SimulatorsManager::emitProgressSignal()
+{
+    emit progress(getProgress());
 }
 
 void FlockSimulator::SimulatorsManager::onFinished(int i)
@@ -136,4 +149,12 @@ void FlockSimulator::SimulatorsManager::onFinished(int i)
 void FlockSimulator::SimulatorsManager::simulatorEnd()
 {
     //    emit end();
+}
+
+void FlockSimulator::ProgressSignalEmiter::run()
+{
+    while(!manager->mSimEnd){
+        manager->emitProgressSignal();
+        QThread::sleep(1);
+    }
 }

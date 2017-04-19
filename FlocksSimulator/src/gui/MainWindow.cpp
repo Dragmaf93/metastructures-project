@@ -11,15 +11,16 @@ MainWindow::MainWindow(QWidget* parent)
 
     mDbPage = new DatabasePage();
     mDbPage->setDatabaseLogger(mDbLogger);
-    SimulationInProgressPage* sipPage = new SimulationInProgressPage();
-    sipPage->setSimulator(mSimulatorManager);
+
+    mSipPage = new SimulationInProgressPage();
+    mSipPage->setSimulator(mSimulatorManager);
 
     mPages.insert(AbstractPage::DATABASE,mDbPage);
     mPages.insert(AbstractPage::GENERAL_CONFIG,new ConfigSimulationPage());
     mPages.insert(AbstractPage::FLOCKS_CONFIG,new FlocksConfigPage());
     mPages.insert(AbstractPage::OBSTACLES_CONFIG,new ObstacleConfigPage());
     mPages.insert(AbstractPage::START_SIMULATION,new StartSimulationPage());
-    mPages.insert(AbstractPage::SIMULATION_RUNNING,sipPage);
+    mPages.insert(AbstractPage::SIMULATION_RUNNING,mSipPage);
     mPages.insert(AbstractPage::RANDOM_SIM_PAGE, new RandomSimulationPage());
     mPages.insert(AbstractPage::LAST_PAGE,new LastPage());
 
@@ -30,8 +31,8 @@ MainWindow::MainWindow(QWidget* parent)
         connect(page, SIGNAL(nextPage(AbstractPage::PAGE_TYPE)),this,SLOT(pageChanged(AbstractPage::PAGE_TYPE)));
     }
     connect(&mSimulatorManager,SIGNAL(end()),this,SLOT(simulationsEnd()));
-    connect(&mSimulatorManager,SIGNAL(message(QString)),sipPage,SLOT(readOutput(QString)));
-    connect(&mSimulatorManager,SIGNAL(error(QString)),sipPage,SLOT(readError(QString)));
+    connect(&mSimulatorManager,SIGNAL(message(QString)),mSipPage,SLOT(readOutput(QString)));
+    connect(&mSimulatorManager,SIGNAL(error(QString)),mSipPage,SLOT(readError(QString)));
 
 }
 
@@ -57,7 +58,7 @@ void MainWindow::toConfigPage()
 void MainWindow::simulationsEnd()
 {
     qDebug() << "ENDOO";
-    ((SimulationInProgressPage*)mPages[AbstractPage::SIMULATION_RUNNING])->simulationEnded();
+    mSipPage->simulationEnded();
     next();
 }
 
@@ -97,7 +98,7 @@ void MainWindow::pageChanged(AbstractPage::PAGE_TYPE type)
                 pageSize--;
             }
         }
-        ((SimulationInProgressPage*)mPages[AbstractPage::SIMULATION_RUNNING])->simulationsStarted();
+        mSipPage->simulationsStarted();
 
         mSimulatorManager.startSimulations();
     }
