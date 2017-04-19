@@ -6,11 +6,14 @@
 #include<QQueue>
 #include<QMutex>
 #include<QWaitCondition>
-
+#include<QMap>
 namespace FlockSimulator {
+
 class ThreadSimulator;
+
 class SimulatorsManager : public MessageSender{
     Q_OBJECT
+
 public:
     SimulatorsManager();
 
@@ -25,12 +28,13 @@ public:
     void setMaxParallelThread(unsigned num);
     unsigned getNumParallelThread();
 
-    float getPercentage();
+    unsigned getProgress();
+    unsigned getMaximumProgress();
 private:
     DataLogger* mDataLogger;
 
     QQueue<ParameterSimulation> mParameterSimulations;
-    QList<ThreadSimulator*> mActiveThreads;
+    QMap<int, ThreadSimulator*> mActiveThreads;
 
     QThread* mMainThread;
 
@@ -43,11 +47,14 @@ private:
 
     unsigned mTotalSimulations;
     unsigned mSimulationEnded;
+    unsigned mTotalSteps;
+    unsigned mCurrentTotalSteps;
 signals:
     void end();
 
 public slots:
     void onFinished(int i);
+
 private slots:
     void simulatorEnd();
     void mainThreadRun();

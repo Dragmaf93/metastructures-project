@@ -58,11 +58,11 @@ SOURCES += src/main.cpp \
     src/gui/FlokcsConfigPage.cpp \
     src/gui/ObstaclesConfigPage.cpp \
     src/gui/StartSimulationPage.cpp \
-    src/gui/SimulationInProgressPage.cpp \
     src/gui/LastPage.cpp \
     src/gui/DatabasePage.cpp \
     src/gui/RandomSimulationPage.cpp \
-    src/MessageSender.cpp
+    src/MessageSender.cpp \
+    src/gui/SimulationInProgressPage.cpp
 
 INCLUDEPATH += $$PWD/libs/include
 DEPENDPATH += $$PWD/libs/include

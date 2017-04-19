@@ -143,3 +143,10 @@ QString FlockSimulator::ParameterSimulation::getSimulationDescription() const
 {
     return mSimulationDescription;
 }
+
+unsigned FlockSimulator::ParameterSimulation::getMaxStep() const
+{
+    float timeStepSec = float(mTimeStepMilliSec)/ 1000;
+    return unsigned ((float)mTimeLimitSec/timeStepSec);
+
+}

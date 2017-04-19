@@ -21,7 +21,7 @@ bool FlockSimulator::ThreadSimulator::initializeSimulation(const FlockSimulator:
     jabs::boidNation::flockInitSetupList flockSetupList;
 
     float timeStepSec = float(p.getTimeStep())/ 1000;
-    mMaxStep = unsigned ((float)p.getTimeLimit()/timeStepSec);
+    mMaxStep = p.getMaxStep();
     mCurrentStep = 0;
 
     mSimulation.setTimeStep(timeStepSec);
@@ -91,6 +91,13 @@ void FlockSimulator::ThreadSimulator::run()
     emit simulationEnded();
 }
 
-float FlockSimulator::ThreadSimulator::getPercentage(){
-    return (100.0f * (float)mCurrentStep)/(float)mMaxStep;
+unsigned FlockSimulator::ThreadSimulator::getMaxStep() const
+{
+    return mMaxStep;
 }
+
+unsigned FlockSimulator::ThreadSimulator::getProgress()const
+{
+    return mCurrentStep;
+}
+

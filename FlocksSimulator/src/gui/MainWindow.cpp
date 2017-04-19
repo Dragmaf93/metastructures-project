@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget* parent)
     mDbPage = new DatabasePage();
     mDbPage->setDatabaseLogger(mDbLogger);
     SimulationInProgressPage* sipPage = new SimulationInProgressPage();
+    sipPage->setSimulator(mSimulatorManager);
 
     mPages.insert(AbstractPage::DATABASE,mDbPage);
     mPages.insert(AbstractPage::GENERAL_CONFIG,new ConfigSimulationPage());
@@ -53,27 +54,10 @@ void MainWindow::toConfigPage()
         back();
 }
 
-//void MainWindow::saveParameters()
-//{
-//    QList<AbstractPage*> pages = mPages.values();
-//    FlockSimulator::ParameterSimulation p;
-
-//    foreach (AbstractPage* page, pages) {
-//        page->setParameterSimulation(p,mSimulationParameter);
-//    }
-
-////    mSimulationParameter.append(p);
-
-////    if(mMultipleSimulationEnabled){
-
-////    }
-//}
-
 void MainWindow::simulationsEnd()
 {
     qDebug() << "ENDOO";
-    button(QWizard::BackButton)->setDisabled(false);
-    button(QWizard::NextButton)->setDisabled(false);
+    ((SimulationInProgressPage*)mPages[AbstractPage::SIMULATION_RUNNING])->simulationEnded();
     next();
 }
 
@@ -103,7 +87,18 @@ void MainWindow::pageChanged(AbstractPage::PAGE_TYPE type)
         for(int i = 0; i < mSimulationParameter.length(); i++){
             mSimulatorManager.addSimulation(mSimulationParameter[i]);
         }
-//        mDbLogger->closeConnection();
+        QList<int> pagesId = this->pageIds();
+        unsigned pageSize = pagesId.size();
+
+        for(unsigned page = 0; pageSize > 2; page++){
+            if(pagesId[page] != AbstractPage::SIMULATION_RUNNING &&
+                    pagesId[page] != AbstractPage::LAST_PAGE){
+                removePage(pagesId[page]);
+                pageSize--;
+            }
+        }
+        ((SimulationInProgressPage*)mPages[AbstractPage::SIMULATION_RUNNING])->simulationsStarted();
+
         mSimulatorManager.startSimulations();
     }
 }

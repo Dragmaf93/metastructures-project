@@ -35,9 +35,6 @@ private:
     FlockSimulator::DatabaseLogger* mDbLogger;
     FlockSimulator::DataLogger* mSelectedLogger;
 
-//    void startSimulations();
-//    void saveParameters();
-
     DatabasePage* mDbPage;
 signals:
     void nextPage();

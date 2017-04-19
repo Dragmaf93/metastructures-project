@@ -18,8 +18,9 @@ public:
 
     bool initializeSimulation(const ParameterSimulation &parameterSimulation);
     void run();
-    float getPercentage();
 
+    unsigned getProgress()const;
+    unsigned getMaxStep()const;
     unsigned id;
 private:
     unsigned mCurrentStep;

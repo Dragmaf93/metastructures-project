@@ -91,6 +91,8 @@ public:
     QString getSimulationName()const;
     QString getSimulationDescription()const;
 
+    unsigned getMaxStep()const;
+
 private:
 
     QString mSimulationLabel;

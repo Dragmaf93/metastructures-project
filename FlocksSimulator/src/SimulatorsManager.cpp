@@ -5,6 +5,8 @@ FlockSimulator::SimulatorsManager::SimulatorsManager()
 {
     mCurrentParallelThread=0;
     mSimulationStarted = false;
+    mTotalSteps = 0;
+    mCurrentTotalSteps = 0;
 }
 
 void FlockSimulator::SimulatorsManager::startSimulations()
@@ -22,11 +24,13 @@ void FlockSimulator::SimulatorsManager::startSimulations()
 void FlockSimulator::SimulatorsManager::reset()
 {
     mParameterSimulations.clear();
+    mTotalSteps = 0;
 }
 
 void FlockSimulator::SimulatorsManager::addSimulation(const FlockSimulator::ParameterSimulation &parameterSimulation)
 {
     mParameterSimulations.enqueue(parameterSimulation);
+    mTotalSteps+=parameterSimulation.getMaxStep();
 }
 
 void FlockSimulator::SimulatorsManager::addSimulations(const QQueue<ParameterSimulation> &pQueue)
@@ -49,9 +53,22 @@ unsigned FlockSimulator::SimulatorsManager::getNumParallelThread()
     return mMaxParallelThread;
 }
 
-float FlockSimulator::SimulatorsManager::getPercentage()
+unsigned FlockSimulator::SimulatorsManager::getProgress()
 {
+    mMutex.lock();
+    int n = 0;
+    QList<ThreadSimulator*> list = mActiveThreads.values();
+    foreach (ThreadSimulator* t, list) {
+        n += t->getProgress();
+    }
+    n+=mCurrentTotalSteps;
+    mMutex.unlock();
+    return n;
+}
 
+unsigned FlockSimulator::SimulatorsManager::getMaximumProgress()
+{
+    return mTotalSteps;
 }
 
 void FlockSimulator::SimulatorsManager::mainThreadRun()
@@ -66,14 +83,15 @@ void FlockSimulator::SimulatorsManager::mainThreadRun()
             mCondition.wait(&mMutex);
         mCurrentParallelThread++;
 
-        mMutex.unlock();
 
+        mMutex.unlock();
         DataLogger* cln = mDataLogger->clone();
         ThreadSimulator * simulator = new ThreadSimulator(cln,this);
 
         if(simulator->initializeSimulation(p)){
 
-            mActiveThreads.append(simulator);
+            mActiveThreads.insert(simulator->id,simulator);
+
             connect(simulator, SIGNAL(finished()), simulator, SLOT(deleteLater()));
             connect(cln,SIGNAL(message(QString)),this,SLOT(sendMessage(QString)));
             connect(cln,SIGNAL(error(QString)),this,SLOT(sendError(QString)));
@@ -83,6 +101,7 @@ void FlockSimulator::SimulatorsManager::mainThreadRun()
         }else{
 
             emit error("Simulator_"+QString::number(simulator->id)+": Error during initilization of simulation.");
+
             delete simulator;
             mCurrentParallelThread--;
             mSimulationEnded++;
@@ -105,6 +124,8 @@ void FlockSimulator::SimulatorsManager::onFinished(int i)
 {
     mMutex.lock();
     mCurrentParallelThread--;
+    mCurrentTotalSteps += mActiveThreads[i]->getMaxStep();
+    mActiveThreads.remove(i);
     mSimulationEnded++;
     emit message("Simulator_"+QString::number(i)+": Has finished.");
     if(mCurrentParallelThread<mMaxParallelThread)
