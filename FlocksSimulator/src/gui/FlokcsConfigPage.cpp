@@ -4,6 +4,7 @@ FlocksConfigPage::FlocksConfigPage()
     : AbstractPage(FLOCKS_CONFIG)
 {
     mAddFlocksButton = new QPushButton();
+    mPredationBox = new QCheckBox("Predation");
 
     QPixmap pixmap(":/resources/icons/add.png");
     QIcon buttonIcon(pixmap);
@@ -16,7 +17,8 @@ FlocksConfigPage::FlocksConfigPage()
 
     QHBoxLayout*  headerLayoutFlock= new QHBoxLayout;
 
-    headerLayoutFlock->addWidget(new QLabel("<h3>Flock</h3>"));
+    headerLayoutFlock->addWidget(new QLabel("<h3>Flocks </h3>"));
+    headerLayoutFlock->addWidget(mPredationBox,Qt::AlignLeft);
     headerLayoutFlock->addWidget(mAddFlocksButton);
 
     mFlocksListLayout = new QVBoxLayout;
@@ -27,7 +29,7 @@ FlocksConfigPage::FlocksConfigPage()
     QWidget* headerWidget = new QWidget();
     headerWidget->setObjectName("headerWidget");
     headerWidget->setLayout(headerLayoutFlock);
-    headerWidget->setStyleSheet("QWidget#headerWidget{background-color:#EEEEEE;"
+    headerWidget->setStyleSheet("QWidget#headerWidget{"
                                 " border-bottom: 1px solid grey;"
                                 "}");
     QWidget* listWidget = new QWidget();
@@ -56,6 +58,7 @@ void FlocksConfigPage::setParameterSimulation(FlockSimulator::ParameterSimulatio
 {
     if(!mViewed) return;
 
+    parameter.setPredation(mPredationBox->isChecked());
     qDebug() <<"FlocksPage";
     parameter.clearFlocks();
     foreach (FlockItem* item, mFlockItems) {
@@ -174,7 +177,7 @@ FlockDialog::FlockDialog(FlockSimulator::ParameterSimulation::Flock &flock)
     QVBoxLayout* rootLayout = new QVBoxLayout;
 
     QHBoxLayout* headerLayout = new QHBoxLayout;
-    headerLayout->addWidget(new QLabel("<h4>Flock</h4>"));
+    headerLayout->addWidget(new QLabel("Flock"));
     headerLayout->addWidget(mFlockLabel);
     QHBoxLayout* centralLayout = new QHBoxLayout;
 
@@ -182,12 +185,12 @@ FlockDialog::FlockDialog(FlockSimulator::ParameterSimulation::Flock &flock)
     QFormLayout* formLayoutL = new QFormLayout;
 
 
-    formLayoutL->addRow(new QLabel("<b>Boids number</b>"),mBoidsNumInput);
-    formLayoutR->addRow(new QLabel("<b>Boids specie"),mBoidsSpecieInput);
-    formLayoutL->addRow(new QLabel("<b>Min X</b>"),mMinXInput);
-    formLayoutR->addRow(new QLabel("<b>Max X</b>"),mMaxXInput);
-    formLayoutL->addRow(new QLabel("<b>Min Z</b>"),mMinZInput);
-    formLayoutR->addRow(new QLabel("<b>Max Z</b>"),mMaxZInput);
+    formLayoutL->addRow(new QLabel("Boids number"),mBoidsNumInput);
+    formLayoutR->addRow(new QLabel("Boids specie"),mBoidsSpecieInput);
+    formLayoutL->addRow(new QLabel("Min X"),mMinXInput);
+    formLayoutR->addRow(new QLabel("Max X"),mMaxXInput);
+    formLayoutL->addRow(new QLabel("Min Z"),mMinZInput);
+    formLayoutR->addRow(new QLabel("Max Z"),mMaxZInput);
 
     centralLayout->addLayout(formLayoutL);
     centralLayout->addLayout(formLayoutR);
@@ -225,12 +228,12 @@ FlockItem::FlockItem( FlockSimulator::ParameterSimulation::Flock &flock)
 
     mFlock = flock;
 
-    mNumBoidLabel = new QLabel(QString("<b>Num Boid: </b>")+QString::number(mFlock.numBoids));
-    mSpecieLabel = new QLabel(QString("<b>Specie: </b>")+QString::number(mFlock.specie));
-    mMinXLabel = new QLabel(QString("<b>Min X: </b>")+QString::number(mFlock.zMin));
-    mMaxXLabel =new QLabel(QString("<b>Max X: </b>")+QString::number(mFlock.xMax));
-    mMinZLabel =new QLabel(QString("<b>Min Z: </b>")+QString::number(mFlock.zMin));
-    mMaxZLabel =new QLabel(QString("<b>Max Z: </b>")+QString::number(mFlock.zMax));
+    mNumBoidLabel = new QLabel(QString("Num Boid: ")+QString::number(mFlock.numBoids));
+    mSpecieLabel = new QLabel(QString("Specie: ")+QString::number(mFlock.specie));
+    mMinXLabel = new QLabel(QString("Min X: ")+QString::number(mFlock.zMin));
+    mMaxXLabel =new QLabel(QString("Max X: ")+QString::number(mFlock.xMax));
+    mMinZLabel =new QLabel(QString("Min Z: ")+QString::number(mFlock.zMin));
+    mMaxZLabel =new QLabel(QString("Max Z: ")+QString::number(mFlock.zMax));
 
     mDeleteButton = new QPushButton();
     mUpdateButton = new QPushButton();
@@ -279,10 +282,10 @@ void FlockItem::updateItem(FlockSimulator::ParameterSimulation::Flock &flock)
 {
     mFlock = flock;
 
-    mNumBoidLabel->setText(QString("<b>Num Boid: </b>")+QString::number(mFlock.numBoids));
-    mSpecieLabel->setText(QString("<b>Specie: </b>")+QString::number(mFlock.specie));
-    mMinXLabel->setText(QString("<b>Min X: </b>")+QString::number(mFlock.zMin));
-    mMaxXLabel->setText(QString("<b>Max X: </b>")+QString::number(mFlock.xMax));
-    mMinZLabel->setText(QString("<b>Min Z: </b>")+QString::number(mFlock.zMin));
-    mMaxZLabel->setText( QString("<b>Max Z: </b>")+QString::number(mFlock.zMax));
+    mNumBoidLabel->setText(QString("Num Boid: ")+QString::number(mFlock.numBoids));
+    mSpecieLabel->setText(QString("Specie: ")+QString::number(mFlock.specie));
+    mMinXLabel->setText(QString("Min X: ")+QString::number(mFlock.zMin));
+    mMaxXLabel->setText(QString("Max X: ")+QString::number(mFlock.xMax));
+    mMinZLabel->setText(QString("Min Z: ")+QString::number(mFlock.zMin));
+    mMaxZLabel->setText( QString("Max Z: ")+QString::number(mFlock.zMax));
 }

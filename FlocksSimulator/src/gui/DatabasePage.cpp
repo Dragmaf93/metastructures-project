@@ -1,4 +1,5 @@
 #include "DatabasePage.h"
+#include <QCheckBox>
 #include <QFile>
 #include<QRegularExpressionValidator>
 
@@ -13,6 +14,7 @@ DatabasePage::DatabasePage()
     mUserInput = new QLineEdit;
     mPortInput = new QLineEdit;
 
+    mPasswordInput->setEchoMode(QLineEdit::Password);
     QString oIpRange = "(?:[0-1]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])";
     QRegularExpression rx("^" + oIpRange
                           + "\\." + oIpRange
@@ -43,6 +45,10 @@ DatabasePage::DatabasePage()
 
     rootLayout->addLayout(firstRowLayout);
     rootLayout->addLayout(formLayout);
+    QCheckBox* mCheckBox = new QCheckBox("Store as default values");
+
+    rootLayout->addWidget(mCheckBox);
+
     this->setLayout(rootLayout);
 
     connect(mPasswordInput, SIGNAL(textChanged(QString)),this, SLOT(pageChanged()));

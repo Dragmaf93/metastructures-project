@@ -10,7 +10,7 @@
 #include <QLabel>
 #include <QXmlQuery>
 
-#include "src/DatabaseLogger.h"
+#include "../DatabaseLogger.h"
 
 class DatabasePage : public AbstractPage{
     Q_OBJECT

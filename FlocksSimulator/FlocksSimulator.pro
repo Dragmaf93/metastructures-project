@@ -31,7 +31,8 @@ HEADERS  += \
     src/gui/DatabasePage.h \
     src/gui/RandomSimulationPage.h \
     src/MessageSender.h \
-    src/exception.h
+    src/exception.h \
+    src/CsvDatalogger.h
 
 SOURCES += src/main.cpp \
     src/ParameterSimulation.cpp \
@@ -62,10 +63,13 @@ SOURCES += src/main.cpp \
     src/gui/DatabasePage.cpp \
     src/gui/RandomSimulationPage.cpp \
     src/MessageSender.cpp \
-    src/gui/SimulationInProgressPage.cpp
+    src/gui/SimulationInProgressPage.cpp \
+    src/CsvDatalogger.cpp
 
-INCLUDEPATH += $$PWD/libs/include
-DEPENDPATH += $$PWD/libs/include
+INCLUDEPATH += $$PWD/libs $$PWD/libs/include
+DEPENDPATH += $$PWD/libs $$PWD/libs/include
+
+LIBS += -L$$PWD/libs -lqtcsv
 
 RESOURCES += \
     images.qrc \

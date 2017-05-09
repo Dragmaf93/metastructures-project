@@ -9,9 +9,9 @@
 class AbstractPage: public QWizardPage{
     Q_OBJECT
 public:
-    enum PAGE_TYPE{DATABASE, GENERAL_CONFIG,FLOCKS_CONFIG,
+    enum PAGE_TYPE{GENERAL_CONFIG,FLOCKS_CONFIG,
                   OBSTACLES_CONFIG,START_SIMULATION,
-                  SIMULATION_RUNNING,RANDOM_SIM_PAGE,LAST_PAGE};
+                  SIMULATION_RUNNING,RANDOM_SIM_PAGE,LAST_PAGE,DATABASE};
 
     AbstractPage(PAGE_TYPE type);
     virtual void setParameterSimulation(FlockSimulator::ParameterSimulation &parameter,

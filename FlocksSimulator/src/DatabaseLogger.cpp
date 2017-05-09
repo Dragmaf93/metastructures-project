@@ -35,7 +35,6 @@ bool FlockSimulator::DatabaseLogger::storeSimulationStep(jabs::simulation &simul
     QSqlDatabase database = QSqlDatabase::database(mConnectionName,false);
     if(connection()){
 
-        const jabs::boid* b = &(simulation.getNation().getBoids()[0]);
         for(unsigned boid = 0; boid < simulation.getNation().getBoids().size(); boid++){
             //            mSim << mLastIdSimulation;
             mStep << currentStep;
@@ -49,8 +48,13 @@ bool FlockSimulator::DatabaseLogger::storeSimulationStep(jabs::simulation &simul
             emit message(mConnectionName+": Storing data simulation.");
 
             QSqlQuery query(database);
-            query.prepare("insert into microscopic_data(simulation, step , boid, positionX, positionY, positionZ) values"
+            query.prepare("insert into microscopic_data(step , boid, positionX, positionY, positionZ,simulation) values"
                           "(?,?,?,?,?,?)");
+            query.addBindValue(mStep);
+            query.addBindValue(mBoids);
+            query.addBindValue(mX);
+            query.addBindValue(mY);
+            query.addBindValue(mZ);
 
             QElapsedTimer timer;
 
@@ -66,18 +70,29 @@ bool FlockSimulator::DatabaseLogger::storeSimulationStep(jabs::simulation &simul
                 mQueryParameter->bindValue(":sim",mLastIdSimulation);
 
                 for(unsigned s = 0; s < mBoids.size(); s++)
-                    mSim << mLastIdSimulation;
+                    mSimStep << mLastIdSimulation;
+                query.addBindValue(mSimStep);
 
-                query.addBindValue(mSim);
-                query.addBindValue(mStep);
-                query.addBindValue(mBoids);
-                query.addBindValue(mX);
-                query.addBindValue(mY);
-                query.addBindValue(mZ);
+                for(unsigned s = 0; s < mNumBoids.size(); s++)
+                    mSimFlock << mLastIdSimulation;
+                mQueryFlocks->addBindValue(mSimFlock);
+
+                for(unsigned s = 0; s < mRadius.size(); s++)
+                    mSimObstacle << mLastIdSimulation;
 
                 if(!mQueryParameter->exec()){
                     emit error(mConnectionName+": "+mQueryParameter->lastError().text());
                 }
+
+                if(!mQueryFlocks->execBatch())
+                    emit error(mConnectionName+": "+mQueryFlocks->lastError().text());
+
+                if(mSimObstacle.size() > 0){
+                    mQueryObstacles->addBindValue(mSimObstacle);
+                    if(!mQueryObstacles->execBatch())
+                        emit error(mConnectionName+": "+mQueryObstacles->lastError().text());
+                }
+
                 if(!query.execBatch()){
                     emit error(mConnectionName+": "+query.lastError().text());
                     delete mQueryParameter;
@@ -144,9 +159,46 @@ bool FlockSimulator::DatabaseLogger::storeSimulationParameter(const ParameterSim
         mQueryParameter->bindValue(":p",parameter.isPredationEnabled());
         mQueryParameter->bindValue(":seed",parameter.getRandomSeed());
 
-        //        if(!queryParameter.exec()) qDebug() <<queryParameter.lastError();
+        mQueryFlocks = new QSqlQuery(database);
+        mQueryFlocks->prepare("insert into init_flock(boids_number,"
+                              "specie, min_x, max_x, min_z, max_z, simulation) values (?,?,?,?,?,?,?)");
+
+        QVector<FlockSimulator::ParameterSimulation::Flock> flocks = parameter.getFlocks();
+        foreach (FlockSimulator::ParameterSimulation::Flock flock, flocks) {
+            mNumBoids << flock.numBoids;
+            mMinX <<flock.xMin;
+            mMaxX <<flock.xMax;
+            mMinZ <<flock.zMin;
+            mMaxZ <<flock.zMax;
+            mSpecie <<flock.specie;
+        }
+        mQueryFlocks->addBindValue(mNumBoids);
+        mQueryFlocks->addBindValue(mSpecie);
+        mQueryFlocks->addBindValue(mMinX);
+        mQueryFlocks->addBindValue(mMaxX);
+        mQueryFlocks->addBindValue(mMinZ);
+        mQueryFlocks->addBindValue(mMaxZ);
+
+        if(!parameter.getObstacles().isEmpty()){
+            qDebug() <<"Ciao";
+            mQueryObstacles = new QSqlQuery(database);
+            mQueryObstacles->prepare("insert into init_obstacle(radius,x,y,z,simulation) values(?,?,?,?,?)");
+
+            QVector<FlockSimulator::ParameterSimulation::Obstacle> obstacles = parameter.getObstacles();
+            foreach (FlockSimulator::ParameterSimulation::Obstacle obstacle, obstacles) {
+                mRadius << obstacle.radius;
+                mCenterX <<obstacle.x;
+                mCenterY <<obstacle.y;
+                mCenterZ <<obstacle.z;
+            }
+            mQueryObstacles->addBindValue(mRadius);
+            mQueryObstacles->addBindValue(mCenterX);
+            mQueryObstacles->addBindValue(mCenterY);
+            mQueryObstacles->addBindValue(mCenterZ);
+        }
 
         return true;
+
     }else{
         delete mQueryParameter;
         delete mQuerySimulation;

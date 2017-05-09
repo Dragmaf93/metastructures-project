@@ -41,6 +41,8 @@ private:
 //    QSqlDatabase mDatabase;
     QSqlQuery* mQuerySimulation;
     QSqlQuery* mQueryParameter;
+    QSqlQuery* mQueryFlocks;
+    QSqlQuery* mQueryObstacles;
 
     QString mConnectionName;
 
@@ -54,13 +56,26 @@ private:
     int mLastIdSimulation;
     bool connection();
 
-    QVariantList mSim;
+    QVariantList mSimStep;
     QVariantList mStep;
     QVariantList mBoids;
     QVariantList mX;
     QVariantList mY;
     QVariantList mZ;
 
+    QVariantList mSimFlock;
+    QVariantList mNumBoids;
+    QVariantList mSpecie;
+    QVariantList mMinX;
+    QVariantList mMaxX;
+    QVariantList mMinZ;
+    QVariantList mMaxZ;
+
+    QVariantList mSimObstacle;
+    QVariantList mRadius;
+    QVariantList mCenterX;
+    QVariantList mCenterY;
+    QVariantList mCenterZ;
 
 private slots:
 };

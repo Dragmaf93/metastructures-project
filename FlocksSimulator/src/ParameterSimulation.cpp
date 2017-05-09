@@ -8,6 +8,9 @@ FlockSimulator::ParameterSimulation::ParameterSimulation()
    mRandomSeed = DEFAULT_RANDOM_SEED;
    mForceSpace = DEFAULT_FORCE_OR;
    mPredationEnabled = DEFAULT_PREDATION_ENABLED;
+   mCollisionAvoidance = DEFAULT_CA;
+   mForceFlockCentering = DEFAULT_FORCE_FC;
+   mVelocityAllignment = DEFAULT_VA;
    mFlocksVector.append(Flock());
 }
 
@@ -29,6 +32,21 @@ void FlockSimulator::ParameterSimulation::setRadiusSpace(float radiusSpace)
 void FlockSimulator::ParameterSimulation::setForceSpace(float forceSpace)
 {
     mForceSpace = forceSpace;
+}
+
+void FlockSimulator::ParameterSimulation::setCollissionAvoidance(float collisionA)
+{
+    mCollisionAvoidance = collisionA;
+}
+
+void FlockSimulator::ParameterSimulation::setForceFlockCentering(float flockCentering)
+{
+    mForceFlockCentering = flockCentering;
+}
+
+void FlockSimulator::ParameterSimulation::setVelocityAllignemt(float velAll)
+{
+    mVelocityAllignment = velAll;
 }
 
 void FlockSimulator::ParameterSimulation::setRandomSeed(unsigned seed)
@@ -54,6 +72,21 @@ float FlockSimulator::ParameterSimulation::getRadiusSpace() const
 float FlockSimulator::ParameterSimulation::getForceSpace() const
 {
     return mForceSpace;
+}
+
+float FlockSimulator::ParameterSimulation::getCollissionAvoidance() const
+{
+    return mCollisionAvoidance;
+}
+
+float FlockSimulator::ParameterSimulation::getForceFlockCentering() const
+{
+    return mForceFlockCentering;
+}
+
+float FlockSimulator::ParameterSimulation::getVelocityAlignemt() const
+{
+    return mVelocityAllignment;
 }
 
 unsigned FlockSimulator::ParameterSimulation::getRandomSeed() const

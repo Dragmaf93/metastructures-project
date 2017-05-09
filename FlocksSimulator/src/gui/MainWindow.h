@@ -16,9 +16,9 @@
 #include "DatabasePage.h"
 #include "RandomSimulationPage.h"
 #include "../MessageSender.h"
-#include"../SimulatorsManager.h"
-#include"../DatabaseLogger.h"
-
+#include "../SimulatorsManager.h"
+#include "../DatabaseLogger.h"
+#include "../CsvDatalogger.h"
 class MainWindow : public QWizard{
     Q_OBJECT
 
@@ -33,6 +33,7 @@ private:
     bool mMultipleSimulationEnabled;
 
     FlockSimulator::DatabaseLogger* mDbLogger;
+    FlockSimulator::CsvDataLogger* mCsvLogger;
     FlockSimulator::DataLogger* mSelectedLogger;
 
     DatabasePage* mDbPage;

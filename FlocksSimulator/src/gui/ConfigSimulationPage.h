@@ -34,6 +34,10 @@ private:
     QRadioButton* mMultipleSimulationsRB;
     QRadioButton* mSingleSimulationRB;
 
+    QDoubleSpinBox* mVelocityAlligninInput;
+    QDoubleSpinBox* mForceFlockCenteringInput;
+    QDoubleSpinBox* mCollisionAvoidanceInput;
+
 };
 
 #endif // CONFIGSIMULATIONPAGE_H

@@ -11,6 +11,9 @@ namespace FlockSimulator{
 #define DEFAULT_RANDOM_SEED 0
 #define DEFAULT_RADIUS_OR 20.00
 #define DEFAULT_FORCE_OR 18.00
+#define DEFAULT_FORCE_FC 10.00
+#define DEFAULT_CA 30.00
+#define DEFAULT_VA 0.59
 #define DEFAULT_OBSTACLE_RADIUS 5.00
 #define DEFAULT_OBSTACLE_X 10.00
 #define DEFAULT_OBSTACLE_Y 10.00
@@ -57,6 +60,10 @@ public:
 
     void setRadiusSpace(float radiusSpace);
     void setForceSpace(float forceSpece);
+    void setCollissionAvoidance(float collisionA);
+    void setForceFlockCentering(float flockCentering);
+    void setVelocityAllignemt(float velAll);
+
 
     void setRandomSeed(unsigned seed);
 
@@ -65,6 +72,9 @@ public:
 
     float getRadiusSpace()const;
     float getForceSpace()const;
+    float getCollissionAvoidance()const;
+    float getForceFlockCentering()const;
+    float getVelocityAlignemt()const;
 
     unsigned getRandomSeed()const;
 
@@ -106,6 +116,10 @@ private:
 
     float mRadiusSpace;
     float mForceSpace;
+
+    float mCollisionAvoidance;
+    float mForceFlockCentering;
+    float mVelocityAllignment;
 
     unsigned mRandomSeed;
 

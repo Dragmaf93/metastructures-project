@@ -37,7 +37,7 @@ bool SimulationInProgressPage::isComplete() const
 
 void SimulationInProgressPage::simulationsStarted()
 {
-    mProgressBar->setMaximum(mSimulator->getMaximumProgress()+ mSimulator->getMaximumProgress()*0.01);
+    mProgressBar->setMaximum(mSimulator->getMaximumProgress()+ mSimulator->getMaximumProgress()*0.1);
 
     qDebug() << mProgressBar->maximum();
 }

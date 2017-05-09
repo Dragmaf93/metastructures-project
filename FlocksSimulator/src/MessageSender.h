@@ -2,7 +2,9 @@
 #define MESSAGESENDER_H
 
 #include <QObject>
+
 namespace  FlockSimulator {
+
 class MessageSender : public QObject{
     Q_OBJECT
 public:

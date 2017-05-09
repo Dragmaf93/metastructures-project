@@ -10,6 +10,7 @@
 #include <QSpinBox>
 #include <QPixmap>
 #include <QIcon>
+#include <QCheckBox>
 class FlockDialog;
 class FlockItem;
 
@@ -29,6 +30,8 @@ private:
     QList<FlockItem*> mFlockItems;
     QVBoxLayout* mFlocksListLayout;
     void addFlockItem(FlockSimulator::ParameterSimulation::Flock &flock);
+
+    QCheckBox* mPredationBox;
 
 private slots:
     void showFlockDialog();

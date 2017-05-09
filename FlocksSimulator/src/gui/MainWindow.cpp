@@ -7,19 +7,22 @@ MainWindow::MainWindow(QWidget* parent)
     mMultipleSimulationEnabled = false;
 
     mDbLogger = new FlockSimulator::DatabaseLogger();
-    mSelectedLogger = mDbLogger;
+    mCsvLogger = new FlockSimulator::CsvDataLogger();
+    mSelectedLogger = mCsvLogger;
 
     mDbPage = new DatabasePage();
     mDbPage->setDatabaseLogger(mDbLogger);
+    StartSimulationPage* ssPage = new StartSimulationPage();
+    ssPage->setCsvDataLogger(mCsvLogger);
 
     mSipPage = new SimulationInProgressPage();
     mSipPage->setSimulator(mSimulatorManager);
 
-    mPages.insert(AbstractPage::DATABASE,mDbPage);
     mPages.insert(AbstractPage::GENERAL_CONFIG,new ConfigSimulationPage());
     mPages.insert(AbstractPage::FLOCKS_CONFIG,new FlocksConfigPage());
     mPages.insert(AbstractPage::OBSTACLES_CONFIG,new ObstacleConfigPage());
-    mPages.insert(AbstractPage::START_SIMULATION,new StartSimulationPage());
+    mPages.insert(AbstractPage::START_SIMULATION,ssPage);
+//     mPages.insert(AbstractPage::DATABASE,mDbPage);
     mPages.insert(AbstractPage::SIMULATION_RUNNING,mSipPage);
     mPages.insert(AbstractPage::RANDOM_SIM_PAGE, new RandomSimulationPage());
     mPages.insert(AbstractPage::LAST_PAGE,new LastPage());

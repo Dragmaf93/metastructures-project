@@ -20,22 +20,33 @@ ConfigSimulationPage::ConfigSimulationPage()
     mRandomSeedInput = new QSpinBox;
     mTimeLimitInput = new QSpinBox;
     mTimeStepInput = new QSpinBox;
+    mVelocityAlligninInput = new QDoubleSpinBox;
+    mForceFlockCenteringInput = new QDoubleSpinBox;
+    mCollisionAvoidanceInput = new QDoubleSpinBox;
 
     mMultipleSimulationsRB = new QRadioButton("Multiple random simulations");
     mSingleSimulationRB = new QRadioButton("Single custom simulation");
+
+    mTimeLimitInput->setMaximum(999);
 
     mForceSpaceInput->setValue(DEFAULT_FORCE_OR);
     mRadiusSpaceInput->setValue(DEFAULT_RADIUS_OR);
     mRandomSeedInput->setValue(DEFAULT_RANDOM_SEED);
     mTimeLimitInput->setValue(DEFAULT_TIME_LIMIT_SEC);
     mTimeStepInput->setValue(DEFAULT_TIME_STEP_MSEC);
+    mVelocityAlligninInput->setValue(DEFAULT_VA);
+    mForceFlockCenteringInput->setValue(DEFAULT_FORCE_FC);
+    mCollisionAvoidanceInput->setValue(DEFAULT_CA);
 
     formLayoutL->addRow(new QLabel("Time limit in seconds"),mTimeLimitInput);
     formLayoutR->addRow(new QLabel("Time step in milliseconds"),mTimeStepInput);
     formLayoutL->addRow(new QLabel("Space constraint radius"),mRadiusSpaceInput);
     formLayoutR->addRow(new QLabel("Space constraint force"),mForceSpaceInput);
-    formLayoutL->addRow(new QLabel("Randomization seed"),mRandomSeedInput);
-    formLayoutR->addRow(new QLabel(" "));
+    formLayoutL->addRow(new QLabel("Velocity alligniment"),mVelocityAlligninInput);
+    formLayoutR->addRow(new QLabel("Force flock centering"),mForceFlockCenteringInput);
+    formLayoutL->addRow(new QLabel("Collision avoidance"),mCollisionAvoidanceInput);
+    formLayoutR->addRow(new QLabel("Randomization seed"),mRandomSeedInput);
+//    formLayoutR->addRow(new QLabel(" "));
     formLayoutL->addRow( mSingleSimulationRB);
     formLayoutR->addRow( mMultipleSimulationsRB);
     QFormLayout* topLayout = new QFormLayout();
@@ -78,6 +89,9 @@ void ConfigSimulationPage::setParameterSimulation(FlockSimulator::ParameterSimul
     parameter.setSimulationDescription(mDescriptionInput->toPlainText());
     parameter.setSimulationLabel(mLabelInput->text());
     parameter.setSimulationName(mNameInput->text());
+    parameter.setCollissionAvoidance(mCollisionAvoidanceInput->value());
+    parameter.setForceFlockCentering(mForceFlockCenteringInput->value());
+    parameter.setVelocityAllignemt(mVelocityAlligninInput->value());
 }
 
 bool ConfigSimulationPage::isComplete() const

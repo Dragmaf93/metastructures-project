@@ -28,6 +28,10 @@ bool FlockSimulator::ThreadSimulator::initializeSimulation(const FlockSimulator:
 
     mSimulation.setRadiusOr(p.getRadiusSpace());
     mSimulation.setForceOr(p.getForceSpace());
+    mSimulation.setForceCa(p.getCollissionAvoidance());
+//    mSimulation.setMaxForceVa(p.getVelocityAllignemt());
+    mSimulation.setBetaVa(p.getVelocityAlignemt());
+    mSimulation.setForceFc(p.getForceFlockCentering());
 
     flockSetup.posDist.coordSystem = jabs::csCartesian;
     flockSetup.posDist.coordSetups[0].probDist = jabs::pdUniform;
